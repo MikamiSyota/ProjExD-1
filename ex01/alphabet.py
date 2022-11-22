@@ -7,7 +7,7 @@ def setup():#対象文字数、欠損文字数の決定を行う
     global taisyou, kesson
     #taisyou = random.randint(1,26) #対象文字数をランダムに決定する場合に使用
     taisyou = 8
-    #kesson = random.randint(0, taisyou) #欠損文字数をらんだむに決定する場合に使用
+    #kesson = random.randint(0, taisyou) #欠損文字数をランダムに決定する場合に使用
     kesson = 2
     
 def syutudai():#問題を出題する
