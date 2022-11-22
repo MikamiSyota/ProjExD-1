@@ -11,7 +11,7 @@ def setup():#対象文字数、欠損文字数の決定を行う
     kesson = 2
     
 def syutudai():#問題を出題する
-    all = [chr(ord("a")+i) for i in range(26)] #すべてのアルファベットを含むリスト
+    all = [chr(ord("A")+i) for i in range(26)] #すべてのアルファベットを含むリスト
     x = random.sample(all, taisyou)   #allリストから対象文字数の数だけ抜き出したリスト     
     print("対象文字列")
     print_list(x)
