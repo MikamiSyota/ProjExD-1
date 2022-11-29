@@ -21,6 +21,8 @@ def button_click(event):
         entry.insert(tk.END, "**")
     elif txt == "AC":
         entry.delete(0,tk.END)
+    elif txt == "x":
+        entry.insert(tk.END,"*")
     else:
         entry.insert(tk.END, txt)
 
@@ -43,7 +45,7 @@ for cm in command_list:
         r += 1
         c = 0
         
-command_list = ["-",]
+command_list = ["-", "x"]
 c = 4
 r -= 1
 for cm in command_list:
