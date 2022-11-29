@@ -4,7 +4,8 @@ import tkinter.messagebox as tkm
 def button_click(event):
     btn = event.widget
     txt = btn["text"]
-    tkm.showinfo(txt, f"[{txt}]ボタンが押されました")
+    #tkm.showinfo(txt, f"[{txt}]ボタンが押されました")
+    entry.insert(tk.END, txt)
 
 root = tk.Tk()
 root.geometry("300x500")
@@ -26,9 +27,11 @@ ope = ["+", "="]
 for op in ope:
     button = tk.Button(root, text=f"{op}", width=4, height=2, font=("", 30))
     button.grid(row=r, column=c)
+    
     c += 1
     if c%3 == 0:
         r += 1
         c = 0
         
+
 root.mainloop()
