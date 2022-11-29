@@ -7,30 +7,30 @@ def button_click(event):
     global flag
     btn = event.widget
     txt = btn["text"]
-    if flag == False:
+    if flag == False: #空白状態で計算されないようにする
         flag = True
         entry.delete(0,tk.END)
     if txt == "=":
         siki = entry.get()
-        try:
+        try:#=連打によるエラー回避
             res = eval(siki)
             entry.delete(0,tk.END)
             entry.insert(tk.END, res)
             flag = False
         except(SyntaxError):
             pass
-    elif txt == "x²":
+    elif txt == "x²": #２乗の計算
         entry.insert(tk.END, "**")
-    elif txt == "√":
+    elif txt == "√": #２乗根の計算
         siki = entry.get()
         entry.delete(0,tk.END)
         res = eval(siki)
-        rs = math.sqrt(res)
+        rs = math.sqrt(res) #mathモジュールで計算を行う
         entry.insert(tk.END, rs)
         flag = False
-    elif txt == "AC":
+    elif txt == "AC":#全部消す
         entry.delete(0,tk.END)
-    elif txt == "x":
+    elif txt == "x": #乗算
         entry.insert(tk.END,"*")
     else:
         entry.insert(tk.END, txt)
