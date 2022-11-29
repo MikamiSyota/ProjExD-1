@@ -1,5 +1,7 @@
 import tkinter as tk
 import tkinter.messagebox as tkm
+import math
+
 flag = True
 def button_click(event):
     global flag
@@ -17,8 +19,15 @@ def button_click(event):
             flag = False
         except(SyntaxError):
             pass
-    elif txt == "^":
+    elif txt == "x²":
         entry.insert(tk.END, "**")
+    elif txt == "√":
+        siki = entry.get()
+        entry.delete(0,tk.END)
+        res = eval(siki)
+        rs = math.sqrt(res)
+        entry.insert(tk.END, rs)
+        flag = False
     elif txt == "AC":
         entry.delete(0,tk.END)
     elif txt == "x":
@@ -35,7 +44,7 @@ entry.grid(row = 0, column=0,columnspan=3)
 r, c = 1, 0
 flag = True
 
-command_list = ["AC", "/","^"]
+command_list = ["AC", "/","x²"]
 for cm in command_list:
     button = tk.Button(root, text=cm, width=4, height=2, font=("",30))
     button.grid(row=r, column=c)
@@ -45,7 +54,7 @@ for cm in command_list:
         r += 1
         c = 0
         
-command_list = ["-", "x"]
+command_list = ["-", "x", "%", "√"]
 c = 4
 r -= 1
 for cm in command_list:
