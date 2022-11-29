@@ -36,7 +36,7 @@ def button_click(event):
         entry.insert(tk.END, txt)
 
 root = tk.Tk()
-root.geometry("300x900")
+root.geometry("400x900")
 
 entry = tk.Entry(root, justify="right", width=10, font=("",40))
 entry.grid(row = 0, column=0,columnspan=3)
