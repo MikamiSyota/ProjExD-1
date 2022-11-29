@@ -20,7 +20,7 @@ def button_click(event):
         entry.insert(tk.END, txt)
 
 root = tk.Tk()
-root.geometry("300x800")
+root.geometry("300x900")
 
 entry = tk.Entry(root, justify="right", width=10, font=("",40))
 entry.grid(row = 0, column=0,columnspan=3)
@@ -28,7 +28,7 @@ entry.grid(row = 0, column=0,columnspan=3)
 r, c = 1, 0
 flag = True
 
-command_list = ["AC", "%", "/","x", "-", "^"]
+command_list = ["AC", "/","*"]
 for cm in command_list:
     button = tk.Button(root, text=cm, width=4, height=2, font=("",30))
     button.grid(row=r, column=c)
@@ -37,8 +37,16 @@ for cm in command_list:
     if c%3 == 0:
         r += 1
         c = 0
-    
-r += 1
+        
+command_list = ["-", "**", "v"]
+c = 4
+r -= 1
+for cm in command_list:
+    button = tk.Button(root, text=cm, width=4, height=2, font=("",30))
+    button.grid(row=r, column=c)
+    button.bind("<1>",button_click)
+    r+=1
+r = 2
 c = 0
 num = 7
 for i in range(10):
