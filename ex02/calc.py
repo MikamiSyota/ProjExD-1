@@ -10,10 +10,15 @@ def button_click(event):
         entry.delete(0,tk.END)
     if txt == "=":
         siki = entry.get()
-        res = eval(siki)
-        entry.delete(0,tk.END)
-        entry.insert(tk.END, res)
-        flag = False
+        try:
+            res = eval(siki)
+            entry.delete(0,tk.END)
+            entry.insert(tk.END, res)
+            flag = False
+        except(SyntaxError):
+            pass
+    elif txt == "^":
+        entry.insert(tk.END, "**")
     elif txt == "AC":
         entry.delete(0,tk.END)
     else:
@@ -28,7 +33,7 @@ entry.grid(row = 0, column=0,columnspan=3)
 r, c = 1, 0
 flag = True
 
-command_list = ["AC", "/","*"]
+command_list = ["AC", "/","^"]
 for cm in command_list:
     button = tk.Button(root, text=cm, width=4, height=2, font=("",30))
     button.grid(row=r, column=c)
@@ -38,7 +43,7 @@ for cm in command_list:
         r += 1
         c = 0
         
-command_list = ["-", "**", "v"]
+command_list = ["-",]
 c = 4
 r -= 1
 for cm in command_list:
