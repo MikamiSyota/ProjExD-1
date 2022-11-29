@@ -1,14 +1,19 @@
 import tkinter as tk
 import tkinter.messagebox as tkm
-
+flag = True
 def button_click(event):
+    global flag
     btn = event.widget
     txt = btn["text"]
+    if flag == False:
+        flag = True
+        entry.delete(0,tk.END)
     if txt == "=":
         siki = entry.get()
         res = eval(siki)
         entry.delete(0,tk.END)
         entry.insert(tk.END, res)
+        flag = False
     elif txt == "AC":
         entry.delete(0,tk.END)
     else:
@@ -21,6 +26,7 @@ entry = tk.Entry(root, justify="right", width=10, font=("",40))
 entry.grid(row = 0, column=0,columnspan=3)
 
 r, c = 1, 0
+flag = True
 
 command_list = ["AC", "%", "/","x", "-", "^"]
 for cm in command_list:
