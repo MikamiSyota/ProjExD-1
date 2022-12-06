@@ -13,7 +13,7 @@ def check_command_list():
         sFlag *= -1
 
 def key_down(event):
-    global key, command_list, key
+    global key, command_list
     key = event.keysym
     if key == "r":
         command_list = []
