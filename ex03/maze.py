@@ -12,11 +12,17 @@ def key_up(event):
     
     
 def main_proc():
-    global cx, cy
-    if key == "Up": cy -= 20
-    elif key == "Down": cy += 20
-    elif key == "Left": cx -= 20
-    elif key == "Right": cx += 20
+    global cx, cy, mx, my
+    if key == "Up": my -= 1
+    elif key == "Down": my += 1
+    elif key == "Left": mx -= 1
+    elif key == "Right": mx += 1
+    if maze_list[mx][my] == 1:
+        if key == "Up": my += 1
+        elif key == "Down": my -= 1
+        elif key == "Left": mx += 1
+        elif key == "Right": mx -= 1
+    cx, cy= mx*100+50, my*100+50
     canvas.coords("koukaton", cx, cy)
     root.after(100,main_proc) 
     
@@ -32,7 +38,8 @@ if __name__ == "__main__":
     mm.show_maze(canvas, maze_list)
     
     img = tk.PhotoImage(file="./fig/8.png")
-    cx, cy= 300, 400
+    mx, my = 1, 1
+    cx, cy= mx*100+50, my*100+50
     canvas.create_image(cx, cy, image=img, tag = "koukaton")
     key = ""
     root.bind("<KeyPress>", key_down)
