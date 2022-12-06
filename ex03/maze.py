@@ -6,11 +6,13 @@ def add_command_list(cm):
     command_list.append(cm)
     
 def check_command_list():
-    global Flag, sFlag
+    global Flag, sFlag, tFlag
     if command_list[-4::] == ["Up", "Left", "Down", "Right"]:
         Flag*=-1
     elif command_list[-6::] == ["Up","Up","Up","Up","Up","Up"]:
         sFlag *= -1
+    elif command_list[-6::] == ["Down","Down","Down","Down","Down", "Down"]:
+        tFlag *= -1
 
 def key_down(event):
     global key, command_list
@@ -28,9 +30,10 @@ def key_up(event):
     check_command_list()
     
 def reset_maze():
-    global maze_list, mx, my, cx, cy, Flag, sFlag
+    global maze_list, mx, my, cx, cy, Flag, sFlag, tFlag
     canvas.delete("koukaton")
     Flag = 1
+    tFlag = 1
     sFlag = 1
     mx, my = 1, 1
     cx, cy= mx*100+50, my*100+50
@@ -65,9 +68,11 @@ def main_proc():
         key = ""
         reset_maze()
     if sFlag == -1:
-        root.after(50,main_proc)
+        root.after(50,main_proc)#加速
+    elif tFlag == -1:
+        root.after(1000,main_proc)#減速
     else:
-        root.after(100,main_proc) 
+        root.after(100,main_proc)#通常速度
     
 
 if __name__ == "__main__":
@@ -86,6 +91,7 @@ if __name__ == "__main__":
     img = tk.PhotoImage(file="./fig/8.png")
     sFlag = 1
     Flag = 1 
+    tFlag = 1
     command_list = []
     mx, my = 1, 1
     cx, cy= mx*100+50, my*100+50
