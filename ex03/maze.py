@@ -85,7 +85,7 @@ if __name__ == "__main__":
     
     img = tk.PhotoImage(file="./fig/8.png")
     sFlag = 1
-    Flag = 1
+    Flag = 1 
     command_list = []
     mx, my = 1, 1
     cx, cy= mx*100+50, my*100+50
