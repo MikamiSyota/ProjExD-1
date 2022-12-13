@@ -8,7 +8,7 @@ def check_bound(obj_rct, scr_rct):
         width = -1
     if (obj_rct.top < scr_rct.top) or (obj_rct.bottom > scr_rct.bottom):
         height = -1
-    return [width, height]
+    return width, height
 
 def main():
     #以降ゲーム処理
@@ -56,6 +56,17 @@ def main():
             tori_rct.centerx -= 1
         if key_dict[pg.K_RIGHT]:
             tori_rct.centerx += 1
+        #練習７
+        if check_bound(tori_rct, scrn_rct) != (+1, +1):
+            # どこかしらはみ出ていたら
+            if key_dict[pg.K_UP]:
+                tori_rct.centery += 1
+            if key_dict[pg.K_DOWN]:
+                tori_rct.centery -= 1
+            if key_dict[pg.K_LEFT]:
+                tori_rct.centerx += 1
+            if key_dict[pg.K_RIGHT]:
+                tori_rct.centerx -= 1  
         scrn_sfc.blit(tori_sfc, tori_rct) #blit
         
         #練習6
@@ -63,6 +74,9 @@ def main():
         scrn_sfc.blit(boomb_sfc, boomb_rct)
         vx *= check_bound(boomb_rct, scrn_rct)[0]
         vy *= check_bound(boomb_rct, scrn_rct)[1]
+        #練習８
+        if tori_rct.colliderect(boomb_rct):
+            return
         pg.display.update()
         clock.tick(1000) #1000fps
             
