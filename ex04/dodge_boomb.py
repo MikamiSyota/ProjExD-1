@@ -10,11 +10,12 @@ def check_bound(obj_rct, scr_rct):
         height = -1
     return width, height
 
+
 def main():
     #以降ゲーム処理
     clock = pg.time.Clock() #時間用オブジェクト
     vx, vy = 1, 1
-    boomb_list = []
+    boomb_list = []#爆弾の各値を保存する変数
     #練習１
     pg.display.set_caption("逃げろ！こうかとん") #タイトルバー表示
     scrn_sfc = pg.display.set_mode((1600, 900)) #Surfaceクラスのオブジェクトを生成
@@ -37,19 +38,21 @@ def main():
         scrn_sfc.blit(pgbg_sfc, pgbg_rct) #blit
         scrn_sfc.blit(tori_sfc, tori_rct) #blit
         
-        for event in pg.event.get():
+        for event in pg.event.get(): 
+            #×ボタンでプログラムを終了する
             if event.type == pg.QUIT:
                 return
          
         #練習４
         key_dict = pg.key.get_pressed() #キーの辞書
+        #各キーに対応する動作
         if key_dict[pg.K_UP]: tori_rct.centery -= 1
         if key_dict[pg.K_DOWN]: tori_rct.centery += 1
         if key_dict[pg.K_LEFT]: tori_rct.centerx -= 1
         if key_dict[pg.K_RIGHT]: tori_rct.centerx += 1
         if key_dict[pg.K_r]: #Rキーを押下するとリセットする
-            count = 0
-            boomb_list.clear()
+            count = 0 #フレームカウントを0にする
+            boomb_list.clear() #爆弾のリストの初期化
 
         #練習７
         if check_bound(tori_rct, scrn_rct) != (+1, +1):
@@ -61,7 +64,7 @@ def main():
         scrn_sfc.blit(tori_sfc, tori_rct) #blit
         
         #練習6
-        for bomb in boomb_list: 
+        for bomb in boomb_list: #爆弾の移動処理
             bomb[1].move_ip(bomb[2], bomb[3]) #vx, vyに従って移動
             scrn_sfc.blit(bomb[0], bomb[1])
             bomb[2] *= check_bound(bomb[1], scrn_rct)[0]
@@ -84,7 +87,6 @@ def main():
             elif random.randint(1, 6) == 2: vx, vy = 0.5, 0.5 #20%の確率で速い爆弾が生まれる
             boomb_list.append([boomb_sfc, boomb_rct, vx, vy]) #爆弾のboomb_sfc, boomb_rct, vx, vyをリストで管理する
             vx, vy = 1, 1
-        
         
         #練習８
         for boomb in boomb_list:
