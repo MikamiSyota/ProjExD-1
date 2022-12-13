@@ -15,17 +15,30 @@ def main():
     tori_rct = tori_sfc.get_rect() #Rect
     tori_rct.center = 900, 400
     
-    
-    clock.tick(1000) #1000fps
-    
     #練習２
     while True:
+        #以降繰り返し処理
         scrn_sfc.blit(pgbg_sfc, pgbg_rct) #blit
         scrn_sfc.blit(tori_sfc, tori_rct) #blit
+        
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 return
+         
+        #練習４
+        key_dict = pg.key.get_pressed()
+        if key_dict[pg.K_UP]:
+            tori_rct.centery -= 1
+        if key_dict[pg.K_DOWN]:
+            tori_rct.centery += 1
+        if key_dict[pg.K_LEFT]:
+            tori_rct.centerx -= 1
+        if key_dict[pg.K_RIGHT]:
+            tori_rct.centerx += 1
+        scrn_sfc.blit(tori_sfc, tori_rct) #blit
+        
         pg.display.update()
+        clock.tick(1000) #1000fps
             
 
 if __name__ == '__main__':
