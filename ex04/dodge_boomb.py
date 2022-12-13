@@ -9,11 +9,19 @@ def main():
     pgbg_sfc = pg.image.load("fig/pg_bg.jpg") #Surface
     pgbg_rct = pgbg_sfc.get_rect()
     
+    #練習３
+    tori_sfc = pg.image.load("fig/6.png") #Surface
+    tori_sfc = pg.transform.rotozoom(tori_sfc, 0, 2.0)
+    tori_rct = tori_sfc.get_rect() #Rect
+    tori_rct.center = 900, 400
+    
+    
     clock.tick(1000) #1000fps
     
     #練習２
     while True:
-        scrn_sfc.blit(pgbg_sfc, pgbg_rct)
+        scrn_sfc.blit(pgbg_sfc, pgbg_rct) #blit
+        scrn_sfc.blit(tori_sfc, tori_rct) #blit
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 return
