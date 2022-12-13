@@ -32,7 +32,7 @@ def main():
     pg.draw.circle(boomb_sfc, (255, 0, 0), (10, 10), 10)
     boomb_rct = boomb_sfc.get_rect()
     boomb_rct.centerx = random.randint(1, scrn_rct.width) #範囲を1からにすることでバグ修正
-    boomb_rct.centery = random.randint(1, scrn_rct.height)
+    boomb_rct.centery = random.randint(1, scrn_rct.height) #範囲を1からにすることでバグ修正
     scrn_sfc.blit(boomb_sfc, boomb_rct) #blit
     
     vx, vy = 1, 1
