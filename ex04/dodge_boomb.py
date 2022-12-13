@@ -75,7 +75,9 @@ def main():
             boomb_rct.centerx = random.randint(1, scrn_rct.width) #範囲を1からにすることでバグ修正
             boomb_rct.centery = random.randint(1, scrn_rct.height) #範囲を1からにすることでバグ修正
             scrn_sfc.blit(boomb_sfc, boomb_rct) #blit
+            if random.randint(1, 6) == 3: vx, vy = 2, 2 #20%の確率で速い爆弾が生まれる
             boomb_list.append([boomb_sfc, boomb_rct, vx, vy]) #爆弾のboomb_sfc, boomb_rct, vx, vyをリストで管理する
+            vx, vy = 1, 1
         
         
         #練習８
