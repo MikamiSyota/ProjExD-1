@@ -1,5 +1,15 @@
 import pygame as pg, sys, random
 
+
+def check_bound(obj_rct, scr_rct):
+    #範囲内:+1/範囲外:-1
+    width, height = 1, 1
+    if (obj_rct.left < scr_rct.left) or (obj_rct.right > scr_rct.right):
+        width = -1
+    if (obj_rct.top < scr_rct.top) or (obj_rct.bottom > scr_rct.bottom):
+        height = -1
+    return [width, height]
+
 def main():
     #以降ゲーム処理
     clock = pg.time.Clock() #時間用オブジェクト
@@ -25,7 +35,7 @@ def main():
     boomb_rct.centery = random.randint(0, scrn_rct.height)
     scrn_sfc.blit(boomb_sfc, boomb_rct) #blit
     
-    
+    vx, vy = 1, 1
     #練習２
     while True:
         #以降繰り返し処理
@@ -37,7 +47,7 @@ def main():
                 return
          
         #練習４
-        key_dict = pg.key.get_pressed()
+        key_dict = pg.key.get_pressed() #キーの辞書
         if key_dict[pg.K_UP]:
             tori_rct.centery -= 1
         if key_dict[pg.K_DOWN]:
@@ -49,9 +59,10 @@ def main():
         scrn_sfc.blit(tori_sfc, tori_rct) #blit
         
         #練習6
-        vx, vy = 1, 1
-        boomb_rct.move_ip(vx, vy)#vx, vyに従って移動  
+        boomb_rct.move_ip(vx, vy) #vx, vyに従って移動  
         scrn_sfc.blit(boomb_sfc, boomb_rct)
+        vx *= check_bound(boomb_rct, scrn_rct)[0]
+        vy *= check_bound(boomb_rct, scrn_rct)[1]
         pg.display.update()
         clock.tick(1000) #1000fps
             
