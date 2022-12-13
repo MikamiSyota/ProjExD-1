@@ -48,6 +48,9 @@ def main():
             tori_rct.centerx += 1
         scrn_sfc.blit(tori_sfc, tori_rct) #blit
         
+        #練習6
+        vx, vy = 1, 1
+        boomb_rct.move_ip(vx, vy)#vx, vyに従って移動  
         scrn_sfc.blit(boomb_sfc, boomb_rct)
         pg.display.update()
         clock.tick(1000) #1000fps
