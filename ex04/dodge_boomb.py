@@ -13,6 +13,8 @@ def check_bound(obj_rct, scr_rct):
 def main():
     #以降ゲーム処理
     clock = pg.time.Clock() #時間用オブジェクト
+    vx, vy = 1, 1
+    boomb_list = []
     #練習１
     pg.display.set_caption("逃げろ！こうかとん") #タイトルバー表示
     scrn_sfc = pg.display.set_mode((1600, 900)) #Surfaceクラスのオブジェクトを生成
@@ -26,19 +28,12 @@ def main():
     tori_rct = tori_sfc.get_rect() #Rect
     tori_rct.center = 900, 400
     
-    #練習5
-    boomb_sfc = pg.Surface((20, 20))#正方形空Surface
-    boomb_sfc.set_colorkey(0, 0)#黒い部分を透明化
-    pg.draw.circle(boomb_sfc, (255, 0, 0), (10, 10), 10)
-    boomb_rct = boomb_sfc.get_rect()
-    boomb_rct.centerx = random.randint(1, scrn_rct.width) #範囲を1からにすることでバグ修正
-    boomb_rct.centery = random.randint(1, scrn_rct.height) #範囲を1からにすることでバグ修正
-    scrn_sfc.blit(boomb_sfc, boomb_rct) #blit
     
-    vx, vy = 1, 1
+    count = 0
     #練習２
     while True:
         #以降繰り返し処理
+        count += 1
         scrn_sfc.blit(pgbg_sfc, pgbg_rct) #blit
         scrn_sfc.blit(tori_sfc, tori_rct) #blit
         
@@ -63,13 +58,27 @@ def main():
         scrn_sfc.blit(tori_sfc, tori_rct) #blit
         
         #練習6
-        boomb_rct.move_ip(vx, vy) #vx, vyに従って移動  
-        scrn_sfc.blit(boomb_sfc, boomb_rct)
-        vx *= check_bound(boomb_rct, scrn_rct)[0]
-        vy *= check_bound(boomb_rct, scrn_rct)[1]
+        for bomb in boomb_list: 
+            bomb[1].move_ip(bomb[2], bomb[3]) #vx, vyに従って移動
+            scrn_sfc.blit(bomb[0], bomb[1])
+            bomb[2] *= check_bound(bomb[1], scrn_rct)[0]
+            bomb[3] *= check_bound(bomb[1], scrn_rct)[1]
+                    
+        if count%1000 == 1:
+            boomb_sfc = pg.Surface((20, 20))#正方形空Surface
+            boomb_sfc.set_colorkey(0, 0)#黒い部分を透明化
+            pg.draw.circle(boomb_sfc, (255, 0, 0), (10, 10), 10)
+            boomb_rct = boomb_sfc.get_rect()
+            boomb_rct.centerx = random.randint(1, scrn_rct.width) #範囲を1からにすることでバグ修正
+            boomb_rct.centery = random.randint(1, scrn_rct.height) #範囲を1からにすることでバグ修正
+            scrn_sfc.blit(boomb_sfc, boomb_rct) #blit
+            boomb_list.append([boomb_sfc, boomb_rct, vx, vy])
+        
+        
         #練習８
-        if tori_rct.colliderect(boomb_rct):
-            return
+        for x in boomb_list:
+            if tori_rct.colliderect(x[1]):
+                return
         pg.display.update()
         clock.tick(1000) #1000fps
             
