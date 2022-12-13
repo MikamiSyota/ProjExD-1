@@ -29,7 +29,7 @@ def main():
     tori_rct.center = 900, 400
     
     
-    count = 0
+    count = 0 #フレーム数をカウントする
     #練習２
     while True:
         #以降繰り返し処理
@@ -46,7 +46,10 @@ def main():
         if key_dict[pg.K_UP]: tori_rct.centery -= 1
         if key_dict[pg.K_DOWN]: tori_rct.centery += 1
         if key_dict[pg.K_LEFT]: tori_rct.centerx -= 1
-        if key_dict[pg.K_RIGHT]: tori_rct.centerx += 1 
+        if key_dict[pg.K_RIGHT]: tori_rct.centerx += 1
+        if key_dict[pg.K_r]: #Rキーを押下するとリセットする
+            count = 0
+            boomb_list.clear()
 
         #練習７
         if check_bound(tori_rct, scrn_rct) != (+1, +1):
@@ -64,7 +67,7 @@ def main():
             bomb[2] *= check_bound(bomb[1], scrn_rct)[0]
             bomb[3] *= check_bound(bomb[1], scrn_rct)[1]
                     
-        if count%1000 == 1:
+        if count%1000 == 1: #１秒ごとにボールを追加する
             boomb_sfc = pg.Surface((20, 20))#正方形空Surface
             boomb_sfc.set_colorkey(0, 0)#黒い部分を透明化
             pg.draw.circle(boomb_sfc, (255, 0, 0), (10, 10), 10)
@@ -72,12 +75,13 @@ def main():
             boomb_rct.centerx = random.randint(1, scrn_rct.width) #範囲を1からにすることでバグ修正
             boomb_rct.centery = random.randint(1, scrn_rct.height) #範囲を1からにすることでバグ修正
             scrn_sfc.blit(boomb_sfc, boomb_rct) #blit
-            boomb_list.append([boomb_sfc, boomb_rct, vx, vy])
+            boomb_list.append([boomb_sfc, boomb_rct, vx, vy]) #爆弾のboomb_sfc, boomb_rct, vx, vyをリストで管理する
         
         
         #練習８
-        for x in boomb_list:
-            if tori_rct.colliderect(x[1]):
+        for boomb in boomb_list:
+            if tori_rct.colliderect(boomb[1]):
+                #こうかとんがいずれかの爆弾に当たった場合、while文を終了する
                 return
         pg.display.update()
         clock.tick(1000) #1000fps
