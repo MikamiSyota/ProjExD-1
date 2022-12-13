@@ -68,10 +68,10 @@ def main():
             bomb[3] *= check_bound(bomb[1], scrn_rct)[1]
                     
         if count%1000 == 1: #１秒ごとにボールを追加する
-            if random.randint(1, 4) == 2: #一定確率で大きい爆弾
+            if random.randint(1, 3) == 2: #一定確率で大きい爆弾
                 boomb_sfc = pg.Surface((40, 40))#正方形空Surface
                 boomb_sfc.set_colorkey(0, 0)#黒い部分を透明化
-                pg.draw.circle(boomb_sfc, (random.randint(0,255), random.randint(0,255), random.randint(0,255)), (20, 20), 30) #色をランダムに決定する
+                pg.draw.circle(boomb_sfc, (random.randint(0,255), random.randint(0,255), random.randint(0,255)), (20, 20), 20) #色をランダムに決定する
             else:
                 boomb_sfc = pg.Surface((20, 20))#正方形空Surface
                 boomb_sfc.set_colorkey(0, 0)#黒い部分を透明化
@@ -80,7 +80,7 @@ def main():
             boomb_rct.centerx = random.randint(1, scrn_rct.width) #範囲を1からにすることでバグ修正
             boomb_rct.centery = random.randint(1, scrn_rct.height) #範囲を1からにすることでバグ修正
             scrn_sfc.blit(boomb_sfc, boomb_rct) #blit
-            if random.randint(1, 6) == 3: vx, vy = 2, 2 #20%の確率で速い爆弾が生まれる
+            if random.randint(1, 6) == 3: vx, vy = 4, 4 #20%の確率で速い爆弾が生まれる
             boomb_list.append([boomb_sfc, boomb_rct, vx, vy]) #爆弾のboomb_sfc, boomb_rct, vx, vyをリストで管理する
             vx, vy = 1, 1
         
