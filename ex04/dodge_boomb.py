@@ -4,9 +4,9 @@ import pygame as pg, sys, random
 def check_bound(obj_rct, scr_rct):
     #範囲内:+1/範囲外:-1
     width, height = 1, 1
-    if (obj_rct.left < scr_rct.left) or (obj_rct.right > scr_rct.right):
+    if (obj_rct.left < scr_rct.left) or (obj_rct.right > scr_rct.right): #左右の画面範囲
         width = -1
-    if (obj_rct.top < scr_rct.top) or (obj_rct.bottom > scr_rct.bottom):
+    if (obj_rct.top < scr_rct.top) or (obj_rct.bottom > scr_rct.bottom): #上下の画面範囲
         height = -1
     return width, height
 
@@ -31,8 +31,8 @@ def main():
     boomb_sfc.set_colorkey(0, 0)#黒い部分を透明化
     pg.draw.circle(boomb_sfc, (255, 0, 0), (10, 10), 10)
     boomb_rct = boomb_sfc.get_rect()
-    boomb_rct.centerx = random.randint(0, scrn_rct.width)
-    boomb_rct.centery = random.randint(0, scrn_rct.height)
+    boomb_rct.centerx = random.randint(1, scrn_rct.width) #範囲を1からにすることでバグ修正
+    boomb_rct.centery = random.randint(1, scrn_rct.height)
     scrn_sfc.blit(boomb_sfc, boomb_rct) #blit
     
     vx, vy = 1, 1
