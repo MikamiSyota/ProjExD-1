@@ -107,8 +107,8 @@ def main():
         kkt.update(scr)
         if frame_count%5000 == 0:
             # 5秒経過ごとにで爆弾のインスタンスを増やす
-            bkd_list.append(Bomb((255, 0, 0), 10, (+1, +1), scr))
-            
+            bkd_list.append(Bomb((random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), 10, (+1, +1), scr))
+            # 爆弾の色をランダムに設定
         for i in bkd_list:
             i.update(scr) # 爆弾のアップデート
             if kkt.rct.colliderect(i.rct): #すべての爆弾に当たり判定を適応
