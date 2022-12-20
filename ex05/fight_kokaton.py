@@ -2,6 +2,7 @@ import pygame as pg
 import random
 import sys
 
+
 bkd_list = [] # 爆弾のインスタンスを保存するリスト
 
 
@@ -58,7 +59,7 @@ class Bird:
 class Bomb(pg.sprite.Sprite):
     #爆弾の描画
     def __init__(self, color, rad, vxy, scr:Screen):
-        pg.sprite.Sprite.__init__(self)
+        pg.sprite.Sprite.__init__(self) # 親クラスのコンストラクタの呼び出し
         self.sfc = pg.Surface((2*rad, 2*rad)) # 正方形の空のSurface
         self.sfc.set_colorkey((0, 0, 0))
         pg.draw.circle(self.sfc, color, (rad, rad), rad)
@@ -66,7 +67,7 @@ class Bomb(pg.sprite.Sprite):
         self.rct.centerx = random.randint(0, scr.rct.width)
         self.rct.centery = random.randint(0, scr.rct.height)
         self.vx, self.vy = vxy
-        self.flag = True
+        self.flag = True #爆弾の当たり判定の有無
 
     def blit(self, scr:Screen):
         scr.sfc.blit(self.sfc, self.rct)
@@ -82,23 +83,24 @@ class Bomb(pg.sprite.Sprite):
             del self
         
     def kill(self):
+        #　描画を停止する
+        #　False：描画しない
         self.flag = False           
 
 
 class Gun(pg.sprite.Sprite):
     # 縦方向のビーム
     def __init__(self, color, rad, bird:Bird):
-        pg.sprite.Sprite.__init__(self)
+        pg.sprite.Sprite.__init__(self) # 親クラスのコンストラクタの呼び出し
         self.sfc =  pg.Surface((2*rad, 2*rad))
         self.sfc.set_colorkey((0, 0, 0))
         pg.draw.ellipse(self.sfc, color, (rad, rad, 2, 10))
         self.rct = self.sfc.get_rect()
         self.rct.centerx = bird.get_x()
         self.rct.centery = bird.get_y()
-        self.vy = -1
-        self.flag = True
-        
-        
+        self.vy = -1 # 上方向にビームを進める
+        self.flag = True #ビームの当たり判定の有無
+         
     def blit(self, scr:Screen):
         scr.sfc.blit(self.sfc, self.rct)
         
@@ -110,24 +112,26 @@ class Gun(pg.sprite.Sprite):
             self.blit(scr)
         else:
             pass  
+        
     def kill(self):
+        #　描画を停止する
+        #　False：描画しない
         self.flag = False
         
 
 class Gun_side(pg.sprite.Sprite):
     # 横方向のビーム
     def __init__(self, color, rad, bird:Bird):
-        pg.sprite.Sprite.__init__(self)
+        pg.sprite.Sprite.__init__(self) # 親クラスのコンストラクタの呼び出し
         self.sfc =  pg.Surface((2*rad, 2*rad))
         self.sfc.set_colorkey((0, 0, 0))
         pg.draw.ellipse(self.sfc, color, (rad, rad, 2, 10))
         self.rct = self.sfc.get_rect()
         self.rct.centerx = bird.get_x()
         self.rct.centery = bird.get_y()
-        self.vx = -1
-        self.flag = True
-        
-        
+        self.vx = -1 # 左方向にビームを進める
+        self.flag = True #ビームの当たり判定の有無
+          
     def blit(self, scr:Screen):
         scr.sfc.blit(self.sfc, self.rct)
         
@@ -141,6 +145,8 @@ class Gun_side(pg.sprite.Sprite):
             pass
                 
     def kill(self):
+        #　描画を停止する
+        #　False：描画しない
         self.flag = False
     
 
@@ -182,21 +188,28 @@ def main():
             
         key_dct = pg.key.get_pressed()
         if key_dct[pg.K_SPACE]: # SPACEボタンで銃を発射
+            # ビームのインスタンスをリストで管理する
             gun_list.append(Gun((255, 0, 0), 10, kkt))
+            
         if key_dct[pg.K_LSHIFT]: # SPACEボタンで銃を発射
+            # ビームのインスタンスをリストで管理する
             gun_list_side.append(Gun_side((255, 0, 0), 10, kkt))
             
         for i in gun_list:
             i.update(scr)
             for j in bkd_list:
+                 # 縦方向の爆弾のヒット処理
                 if i.rct.colliderect(j.rct):
+                    # 当たった爆弾とビームの描画を辞める
                     i.kill()
                     j.kill()
                     
         for i in gun_list_side:
             i.update(scr) 
             for j in bkd_list:
+                 # 横方向の爆弾のヒット処理
                 if i.rct.colliderect(j.rct) and i.flag and j.flag:
+                    # 当たった爆弾とビームの描画をやめる
                     i.kill()
                     j.kill()
             
