@@ -86,6 +86,7 @@ class Bomb(pg.sprite.Sprite):
 
 
 class Gun(pg.sprite.Sprite):
+    # 縦方向のビーム
     def __init__(self, color, rad, bird:Bird):
         pg.sprite.Sprite.__init__(self)
         self.sfc =  pg.Surface((2*rad, 2*rad))
@@ -114,6 +115,7 @@ class Gun(pg.sprite.Sprite):
         
 
 class Gun_side(pg.sprite.Sprite):
+    # 横方向のビーム
     def __init__(self, color, rad, bird:Bird):
         pg.sprite.Sprite.__init__(self)
         self.sfc =  pg.Surface((2*rad, 2*rad))
