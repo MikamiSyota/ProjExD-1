@@ -3,7 +3,7 @@ import random
 import sys
 
 bkd_list = [] # 爆弾のインスタンスを保存するリスト
-frame_count = 0 # フレーム数をカウントする変数
+
 
 class Screen:
     #スクリーンの描画
@@ -46,12 +46,19 @@ class Bird:
             if check_bound(self.rct, scr.rct) != (+1, +1):
                 self.rct.centerx -= delta[0]
                 self.rct.centery -= delta[1]
-        self.blit(scr)                    
+        self.blit(scr)   
+        
+    def get_x(self):
+        return self.rct.centerx   
+    
+    def get_y(self):
+        return self.rct.centery              
 
 
-class Bomb:
+class Bomb(pg.sprite.Sprite):
     #爆弾の描画
     def __init__(self, color, rad, vxy, scr:Screen):
+        pg.sprite.Sprite.__init__(self)
         self.sfc = pg.Surface((2*rad, 2*rad)) # 正方形の空のSurface
         self.sfc.set_colorkey((0, 0, 0))
         pg.draw.circle(self.sfc, color, (rad, rad), rad)
@@ -59,17 +66,81 @@ class Bomb:
         self.rct.centerx = random.randint(0, scr.rct.width)
         self.rct.centery = random.randint(0, scr.rct.height)
         self.vx, self.vy = vxy
+        self.flag = True
 
     def blit(self, scr:Screen):
         scr.sfc.blit(self.sfc, self.rct)
 
     def update(self, scr:Screen):
-        self.rct.move_ip(self.vx, self.vy)
-        yoko, tate = check_bound(self.rct, scr.rct)
-        self.vx *= yoko
-        self.vy *= tate
-        self.blit(scr)
+        if self.flag:
+            self.rct.move_ip(self.vx, self.vy)
+            yoko, tate = check_bound(self.rct, scr.rct)
+            self.vx *= yoko
+            self.vy *= tate
+            self.blit(scr)
+        else:
+            del self
+        
+    def kill(self):
+        self.flag = False           
 
+
+class Gun(pg.sprite.Sprite):
+    def __init__(self, color, rad, bird:Bird):
+        pg.sprite.Sprite.__init__(self)
+        self.sfc =  pg.Surface((2*rad, 2*rad))
+        self.sfc.set_colorkey((0, 0, 0))
+        pg.draw.ellipse(self.sfc, color, (rad, rad, 2, 10))
+        self.rct = self.sfc.get_rect()
+        self.rct.centerx = bird.get_x()
+        self.rct.centery = bird.get_y()
+        self.vy = -1
+        self.flag = True
+        
+        
+    def blit(self, scr:Screen):
+        scr.sfc.blit(self.sfc, self.rct)
+        
+    def update(self, scr:Screen):
+        if self.flag:
+            self.rct.move_ip(0, self.vy)
+            if self.rct.top <= 0:
+                self.kill()         
+            self.blit(scr)
+        else:
+            pass  
+    def kill(self):
+        self.flag = False
+        
+
+class Gun_side(pg.sprite.Sprite):
+    def __init__(self, color, rad, bird:Bird):
+        pg.sprite.Sprite.__init__(self)
+        self.sfc =  pg.Surface((2*rad, 2*rad))
+        self.sfc.set_colorkey((0, 0, 0))
+        pg.draw.ellipse(self.sfc, color, (rad, rad, 2, 10))
+        self.rct = self.sfc.get_rect()
+        self.rct.centerx = bird.get_x()
+        self.rct.centery = bird.get_y()
+        self.vx = -1
+        self.flag = True
+        
+        
+    def blit(self, scr:Screen):
+        scr.sfc.blit(self.sfc, self.rct)
+        
+    def update(self, scr:Screen):
+        if self.flag:
+            self.rct.move_ip(self.vx, 0)
+            if self.rct.left <= 0 or self.rct.right >= 1600: 
+                self.kill()         
+            self.blit(scr)
+        else:
+            pass
+                
+    def kill(self):
+        self.flag = False
+    
 
 def check_bound(obj_rct, scr_rct):
     """
@@ -86,11 +157,14 @@ def check_bound(obj_rct, scr_rct):
 
 
 def main():
-    global frame_count, bkd_list
+    global bkd_list
+    frame_count = 0 # フレーム数をカウントする変数
+    gun_list = [] # 弾のインスタンスを保存するリスト
+    gun_list_side = []
     clock =pg.time.Clock()
 
     # 練習１
-    scr = Screen("逃げろ！こうかとん", (1600,900), "fig/pg_bg.jpg") # Screenオブジェクトのインスタンス生成
+    scr = Screen("戦え！こうかとん", (1600,900), "fig/pg_bg.jpg") # Screenオブジェクトのインスタンス生成
 
     # 練習３
     kkt = Bird("fig/6.png", 2.0, (900,400)) # Birdオブジェクトのインスタンス生成
@@ -104,14 +178,34 @@ def main():
                 #×ボタンでゲーム終了
                 return
             
+        key_dct = pg.key.get_pressed()
+        if key_dct[pg.K_SPACE]: # SPACEボタンで銃を発射
+            gun_list.append(Gun((255, 0, 0), 10, kkt))
+        if key_dct[pg.K_LSHIFT]: # SPACEボタンで銃を発射
+            gun_list_side.append(Gun_side((255, 0, 0), 10, kkt))
+            
+        for i in gun_list:
+            i.update(scr)
+            for j in bkd_list:
+                if i.rct.colliderect(j.rct):
+                    i.kill()
+                    j.kill()
+                    
+        for i in gun_list_side:
+            i.update(scr)
+            for j in bkd_list:
+                if i.rct.colliderect(j.rct) and i.flag and j.flag:
+                    i.kill()
+                    j.kill()
+            
         kkt.update(scr)
-        if frame_count%5000 == 0:
+        if frame_count%1000 == 0:
             # 5秒経過ごとにで爆弾のインスタンスを増やす
             bkd_list.append(Bomb((random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), 10, (+1, +1), scr))
             # 爆弾の色をランダムに設定
         for i in bkd_list:
             i.update(scr) # 爆弾のアップデート
-            if kkt.rct.colliderect(i.rct): #すべての爆弾に当たり判定を適応
+            if kkt.rct.colliderect(i.rct) and i.flag: #すべての爆弾に当たり判定を適応
                 #爆弾が当たったらゲーム終了
                 return
             
