@@ -192,7 +192,7 @@ def main():
                     j.kill()
                     
         for i in gun_list_side:
-            i.update(scr)
+            i.update(scr) 
             for j in bkd_list:
                 if i.rct.colliderect(j.rct) and i.flag and j.flag:
                     i.kill()
@@ -200,8 +200,11 @@ def main():
             
         kkt.update(scr)
         if frame_count%1000 == 0:
+            if random.randint(1, 4) == 2: #33％の確率で速いボール
+                bkd_list.append(Bomb((random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), 10, (+3, +3), scr))
+            else:
             # 5秒経過ごとにで爆弾のインスタンスを増やす
-            bkd_list.append(Bomb((random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), 10, (+1, +1), scr))
+                bkd_list.append(Bomb((random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), 10, (+1, +1), scr))
             # 爆弾の色をランダムに設定
         for i in bkd_list:
             i.update(scr) # 爆弾のアップデート
