@@ -84,7 +84,7 @@ class Bomb(pg.sprite.Sprite):
         
     def kill(self):
         #　描画を停止する
-        #　False：描画しない　
+        #　False：描画しない True：描画する
         self.flag = False           
 
 
@@ -115,7 +115,7 @@ class Gun(pg.sprite.Sprite):
         
     def kill(self):
         #　描画を停止する
-        #　False：描画しない
+        #　False：描画しない　True：描画する
         self.flag = False
         
 
@@ -146,7 +146,7 @@ class Gun_side(pg.sprite.Sprite):
                 
     def kill(self):
         #　描画を停止する
-        #　False：描画しない
+        #　False：描画しない　True：描画する
         self.flag = False
     
 
