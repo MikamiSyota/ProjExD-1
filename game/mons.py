@@ -2,6 +2,7 @@ import pygame as pg
 import sys
 import random
 
+startFlag = False
 
 class Screen:
     #スクリーンの描画
@@ -56,23 +57,37 @@ class My:
     def blit(self, scr:Screen):
         scr.sfc.blit(self.sfc, self.rct)
     
-    def update(self, scr:Screen):
-        self.rct.move_ip(self.vx, self.vy)
-        yoko, tate = check_bound(self.rct, scr.rct)
-        if abs(self.vx) >= abs(self.dx):
-            self.vx += self.dx
-            self.vy += self.dy
-        self.vx *= yoko
-        self.vy *= tate
-        self.dx *= yoko
-        self.dy *= tate
-        print(self.vx)
+    def update(self, scr:Screen, speed):
+        global startFlag
+        if speed:
+            self.rct.move_ip(self.vx, self.vy)
+            yoko, tate = check_bound(self.rct, scr.rct)
+            if abs(self.vx) >= abs(self.dx):
+                self.vx += self.dx
+                self.vy += self.dy
+            else:
+                startFlag = False
+                if self.vx > 0:
+                    self.vx = 10
+                elif self.vx < 0:
+                    self.vx = -10
+                if self.vy > 0:
+                    self.vy = 10
+                elif self.vy < 0:
+                    self.vy = -10
+            
+            self.vx *= yoko
+            self.vy *= tate
+            self.dx *= yoko
+            self.dy *= tate
+
         self.blit(scr)
 
 def main():
+    global startFlag
     scr = Screen("モンスト", (1600,900), "fig/pg_bg.jpg") # Screenオブジェクトのインスタンス生成
     clock = pg.time.Clock()
-    
+        
     kkt = Enemy("fig/6.png", 2.0, (900,400)) # Enemyオブジェクトのインスタンス生成
     kkt.blit(scr)
     my = My((255,0,0), 10, (10, 10), scr)
@@ -84,8 +99,14 @@ def main():
                 #×ボタンでゲーム終了
                 return
             
+            if event.type == pg.MOUSEBUTTONDOWN and startFlag == False:
+                startFlag = True
+               
         kkt.blit(scr)
-        my.update(scr)
+        if startFlag:
+            my.update(scr, True)
+        else:
+            my.update(scr, False)
         pg.display.update()
         clock.tick(1000)
     
