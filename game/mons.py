@@ -2,8 +2,8 @@ import pygame as pg
 import sys
 import random
 
-startFlag = False
-flag = False
+startFlag = False #ボールが停止しているかの判定
+flag = False #連続で敵キャラに当たらないようにする
 
 
 class Screen:
@@ -20,11 +20,7 @@ class Screen:
         
         
 def check_bound(obj_rct, scr_rct):
-    """
-    第1引数：こうかとんrectまたは爆弾rect
-    第2引数：スクリーンrect
-    範囲内：+1／範囲外：-1
-    """
+    #壁との当たり判定
     yoko, tate = +1, +1
     if obj_rct.left < scr_rct.left or scr_rct.right < obj_rct.right:
         yoko = -1
@@ -34,20 +30,23 @@ def check_bound(obj_rct, scr_rct):
 
 
 class Enemy:
+    #敵キャラの描画
     def __init__(self, img_path, ratio, xy, hp):
         self.sfc = pg.image.load(img_path)
         self.sfc = pg.transform.rotozoom(self.sfc, 0, ratio)
         self.rct = self.sfc.get_rect()
         self.rct.center = xy
-        self.hp = hp
+        self.hp = hp #ヒットポイント
 
     def blit(self, scr:Screen):
         scr.sfc.blit(self.sfc, self.rct)
         
     def hit(self):
+        #ボールが当たった時ヒットポイントを-1する
         self.hp -= 1
         
     def return_hp(self):
+        #ヒットポイントを返す
         return self.hp
         
 
@@ -60,8 +59,9 @@ class My:
         self.rct.centerx = random.randint(0, scr.rct.width)
         self.rct.centery = random.randint(0, scr.rct.height)
         self.vx, self.vy = vxy
-        self.dx = -0.01
-        if vxy[0] < 0:
+        
+        self.dx = -0.01 #減速率
+        if vxy[0] < 0: #発射方向によって減速のプラスマイナスを調整する
             self.dx *= -1
         self.dy = -0.01
         if vxy[1] < 0:
@@ -72,10 +72,11 @@ class My:
     
     def update(self, scr:Screen, speed):
         global startFlag
-        if speed:
+        if speed: #ボールが止まっていなかったら
             self.rct.move_ip(self.vx, self.vy)
             yoko, tate = check_bound(self.rct, scr.rct)
             if abs(self.vx) >= abs(self.dx):
+                #減速させる
                 self.vx += self.dx
                 self.vy += self.dy
             else:
@@ -100,13 +101,14 @@ def main():
     global startFlag, flag
     start_x = 10
     start_y = 10
-    scr = Screen("モンスト", (1600,900), "fig/pg_bg.jpg") # Screenオブジェクトのインスタンス生成
+    scr = Screen("モンスタ", (1600,900), "fig/pg_bg.jpg") # Screenオブジェクトのインスタンス生成
     clock = pg.time.Clock()
         
     kkt = Enemy("fig/6.png", 2.0, (900,400), 3) # Enemyオブジェクトのインスタンス生成
     kkt.blit(scr)
     my = My((255,0,0), 10, (start_x, start_y), scr)
     my.blit(scr)
+    
     while True:
         scr.blit()
         for event in pg.event.get():
@@ -118,18 +120,22 @@ def main():
                 startFlag = True
                
         kkt.blit(scr)
+        
         if startFlag:
             my.update(scr, True)
         else:
             my.update(scr, False)
             
         if kkt.rct.colliderect(my.rct) and  not flag:
-            kkt.hit()
-            flag = True
+            kkt.hit()#hpを減らす
+            flag = True#flagを0にして連続で当たることを回避する
+            
         if not kkt.rct.colliderect(my.rct):
+            #flagをfalseに戻す
             flag = False
             
         if kkt.return_hp() <= 0:
+            #hpが0になったらゲームを終了する
             return
         
         pg.display.update()
