@@ -100,7 +100,7 @@ class My:
         self.rct.centery = 700 #スタート位置
         self.vx, self.vy = vxy
         self.dx = 0.996
-        self.dy = self.dx * (900/1600)
+        self.dy = self.dx * (900/1600) #減速率に画面の縦横比を考慮する
             
     def set_vxy(self, xy): #発射角度を設定
         self.vx, self.vy = xy
