@@ -22,7 +22,14 @@ class Screen:
         
         
 def check_bound(obj_rct, scr_rct):
+
+    """
+    第1引数：マイrect
+    第2引数：スクリーンrect
+    範囲内：+1／範囲外：-1
+    """
     #壁との当たり判定
+
     yoko, tate = +1, +1
     if obj_rct.left < scr_rct.left or scr_rct.right < obj_rct.right:
         yoko = -1
@@ -30,6 +37,18 @@ def check_bound(obj_rct, scr_rct):
         tate = -1
     return yoko, tate       
 
+def check_bound_enemy(obj_rct, enm_rct):
+    """
+    第1引数：マイrect
+    第2引数：エネミーrect
+    範囲内：+1／範囲外：-1
+    """
+    yoko, tate = +1, +1
+    if obj_rct.left < enm_rct.left or enm_rct.right < obj_rct.right:
+        yoko = -1
+    if obj_rct.top < enm_rct.top or enm_rct.bottom < obj_rct.bottom:
+        tate = -1
+    return yoko, tate     
 
 class Enemy:
     #敵キャラの描画
@@ -88,6 +107,36 @@ class My:
             
             self.vx *= yoko
             self.vy *= tate
+            self.dx *= yoko
+            self.dy *= tate
+    
+        self.blit(scr)
+            
+    def update2(self, enm:Enemy, speed):
+        global startFlag
+        if speed:
+            self.rct.move_ip(self.vx, self.vy)
+            yoko, tate = check_bound(self.rct, enm.rct)
+            if abs(self.vx) >= abs(self.dx):
+                self.vx += self.dx
+                self.vy += self.dy
+            else:
+                startFlag = False
+                if self.vx > 0:
+                    self.vx = 10
+                elif self.vx < 0:
+                    self.vx = -10
+                if self.vy > 0:
+                    self.vy = 10
+                elif self.vy < 0:
+                    self.vy = -10
+            
+            self.vx *= yoko
+            self.vy *= tate
+            self.dx *= yoko
+            self.dy *= tate
+    
+        self.blit(enm)
         self.blit(scr)
         
 def delection(mouse, my):
@@ -126,15 +175,15 @@ def game_clear():
     pg.display.update()
     pg.time.wait(2000)
 
-
 def main():
     global startFlag, flag
     start_x = 10
     start_y = 10
+
     scr = Screen("モンスタ", (1600,900), "fig/pg_bg.jpg") # Screenオブジェクトのインスタンス生成
     clock = pg.time.Clock()
         
-    kkt = Enemy("fig/6.png", 2.0, (900,400), 3) # Enemyオブジェクトのインスタンス生成
+    kkt = Enemy("game/fig/6.png", 2.0, (900,400), 3) # Enemyオブジェクトのインスタンス生成
     kkt.blit(scr)
     my = My((255,0,0), 25, (start_x, start_y), scr)
     my.blit(scr)
@@ -164,9 +213,13 @@ def main():
             my.update(scr, False)
             
         if kkt.rct.colliderect(my.rct) and  not flag:
-            kkt.hit()#hpを減らす
-            flag = True#flagをTrueにして連続で当たることを回避する
-            
+            kkt.hit()
+            if startFlag:
+                my.update2(kkt, True)
+            else:
+                my.update2(kkt, False)
+            flag = True
+ 
         if not kkt.rct.colliderect(my.rct):
             #flagをfalseに戻す
             flag = False
