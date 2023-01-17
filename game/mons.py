@@ -1,6 +1,7 @@
 import pygame as pg
 import sys
 import random
+import math
 
 startFlag = False #ボールが停止しているかの判定
 flag = False #連続で敵キャラに当たらないようにする
@@ -60,12 +61,13 @@ class My:
         self.rct.centery = random.randint(0, scr.rct.height)
         self.vx, self.vy = vxy
         
-        self.dx = -0.01 #減速率
-        if vxy[0] < 0: #発射方向によって減速のプラスマイナスを調整する
-            self.dx *= -1
-        self.dy = -0.01
-        if vxy[1] < 0:
-            self.dy *= -1
+        self.dx = 0.99
+            
+    def set_vxy(self, xy): #発射角度を設定
+        self.vx, self.vy = xy
+    
+    def return_xy(self): #ボールの座標を返す
+        return (self.rct.centerx, self.rct.centery)
         
     def blit(self, scr:Screen):
         scr.sfc.blit(self.sfc, self.rct)
@@ -77,25 +79,29 @@ class My:
             yoko, tate = check_bound(self.rct, scr.rct)
             if abs(self.vx) >= abs(self.dx):
                 #減速させる
-                self.vx += self.dx
-                self.vy += self.dy
+                self.vx*=self.dx
+                self.vy*=self.dx
             else:
                 startFlag = False
-                if self.vx > 0:
-                    self.vx = 10
-                elif self.vx < 0:
-                    self.vx = -10
-                if self.vy > 0:
-                    self.vy = 10
-                elif self.vy < 0:
-                    self.vy = -10
+
             
             self.vx *= yoko
             self.vy *= tate
-            self.dx *= yoko
-            self.dy *= tate
 
         self.blit(scr)
+        
+def delection(mouse, my):
+    r = abs(mouse[0]-my[0])
+    l = abs(mouse[1]-my[1])
+    res = r^2 + l^2
+    res = math.sqrt(res)
+    x = r/res
+    y = l/res
+    if mouse[0] <= my[0]:
+        x *= -1
+    if mouse[1] <= my[1]:
+        y *= -1
+    return (x, y)
 
 def main():
     global startFlag, flag
@@ -117,6 +123,10 @@ def main():
                 return
             
             if event.type == pg.MOUSEBUTTONDOWN and startFlag == False:
+                mouse = pg.mouse.get_pos()#マウス座標の取得
+                my_xy = my.return_xy()
+                delection_xy = delection(mouse, my_xy)
+                my.set_vxy(delection_xy)
                 startFlag = True
                
         kkt.blit(scr)
@@ -128,7 +138,7 @@ def main():
             
         if kkt.rct.colliderect(my.rct) and  not flag:
             kkt.hit()#hpを減らす
-            flag = True#flagを0にして連続で当たることを回避する
+            flag = True#flagをTrueにして連続で当たることを回避する
             
         if not kkt.rct.colliderect(my.rct):
             #flagをfalseに戻す
