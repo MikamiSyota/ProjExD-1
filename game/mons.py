@@ -1,8 +1,8 @@
 import pygame as pg
 import sys
-import random
 import os
 import math
+
 
 startFlag = False #ボールが停止しているかの判定
 flag = False #連続で敵キャラに当たらないようにする
@@ -22,14 +22,12 @@ class Screen:
         
         
 def check_bound(obj_rct, scr_rct):
-
     """
     第1引数：マイrect
     第2引数：スクリーンrect
     範囲内：+1／範囲外：-1
+    壁との当たり判定
     """
-    #壁との当たり判定
-
     yoko, tate = +1, +1
     if obj_rct.left < scr_rct.left or scr_rct.right < obj_rct.right:
         yoko = -1
@@ -70,36 +68,26 @@ class Enemy:
         #ヒットポイントを返す
         return self.hp
 
-class HealthBar:
-    max_hp = 5
+
+class HealthBar: #HPバーの作成
+    max_hp = 5 #敵キャラのHP
     def __init__(self,img_path, hxy):
         self.sfcs = [pg.image.load(img_path) for i in range(self.max_hp)]
         self.rcts = [self.sfcs[j].get_rect() for j in range(self.max_hp)]
-        for x in range(self.max_hp):
-            if x == 0:
+        for x in range(self.max_hp): #敵キャラのHP分繰り返す
+            if x == 0: #バーの描画が1回目であれば
                 self.rcts[x].center = hxy
-            else:
-                self.rcts[x].centerx = self.rcts[x -1].centerx + self.rcts[x -1].width
-                self.rcts[x].centery = self.rcts[x - 1].centery
-        # print(self.rct.width)
-
-
+            else: #バーの描画が2回目以降であれば
+                self.rcts[x].centerx = self.rcts[x -1].centerx + self.rcts[x -1].width #一個前の座標の中央のx値と横幅を加算する
+                self.rcts[x].centery = self.rcts[x - 1].centery #立幅は変更しないためcenteyの値は1個前の値をそのまま使用
 
     def blit(self, scr:Screen):
         for z in range(self.max_hp):
             scr.sfc.blit(self.sfcs[z], self.rcts[z])
 
     def update(self, scr:Screen):
-        for y in range(self.max_hp):
+        for y in range(self.max_hp): #敵キャラの現在のHP分繰り返す
             self.blit(scr)
-
-        # if self.hp_gage != 0:
-        #     self.hp_gage -= 20
-        #     pg.draw.rect(self.sfc, (32, 32, 32), [10+self.hp_gage*2, 450, (100 - self.hp_gage)*2, 25])
-        # else:
-        #     pass
-        
-
 
 
 class My:
@@ -108,12 +96,11 @@ class My:
         self.sfc.set_colorkey((0, 0, 0))
         pg.draw.circle(self.sfc, color, (rad, rad), rad)
         self.rct = self.sfc.get_rect()
-        self.rct.centerx = random.randint(0, scr.rct.width)
-        self.rct.centery = random.randint(0, scr.rct.height)
+        self.rct.centerx = 700 #スタート位置
+        self.rct.centery = 700 #スタート位置
         self.vx, self.vy = vxy
-
-        
-        self.dx = 0.99
+        self.dx = 0.996
+        self.dy = self.dx * (900/1600)
             
     def set_vxy(self, xy): #発射角度を設定
         self.vx, self.vy = xy
@@ -135,13 +122,8 @@ class My:
                 self.vy*=self.dx
             else:
                 startFlag = False
-
-            
             self.vx *= yoko
             self.vy *= tate
-            self.dx *= yoko
-            self.dy *= tate
-    
         self.blit(scr)
             
     def update2(self, enm:Enemy, speed):
@@ -150,37 +132,28 @@ class My:
             self.rct.move_ip(self.vx, self.vy)
             yoko, tate = check_bound(self.rct, enm.rct)
             if abs(self.vx) >= abs(self.dx):
-                self.vx += self.dx
-                self.vy += self.dy
+                self.vx *= self.dx
+                self.vy *= self.dy
             else:
                 startFlag = False
-                if self.vx > 0:
-                    self.vx = 10
-                elif self.vx < 0:
-                    self.vx = -10
-                if self.vy > 0:
-                    self.vy = 10
-                elif self.vy < 0:
-                    self.vy = -10
-            
             self.vx *= yoko
             self.vy *= tate
             self.dx *= yoko
             self.dy *= tate
     
         self.blit(enm)
-        self.blit(scr)
         
-def delection(mouse, my):
-    r = abs(mouse[0]-my[0])
-    l = abs(mouse[1]-my[1])
-    res = r^2 + l^2
-    res = math.sqrt(res)
-    x = r/res
-    y = l/res
-    if mouse[0] <= my[0]:
-        x *= -1
-    if mouse[1] <= my[1]:
+        
+def delection(mouse, my): #発射角度の設定
+    dx = abs(mouse[0]-my[0]) #x座標の差
+    dy = abs(mouse[1]-my[1]) #y座標の差
+    res = dx^2 + dy^2 #斜めの距離
+    res = math.sqrt(res) 
+    x = dx/res #比率を求める
+    y = dy/res #比率を求める
+    if mouse[0] <= my[0]:#マウス座標がボールより小さいとき
+        x *= -1 
+    if mouse[1] <= my[1]:#マウス座標がボールより小さいとき
         y *= -1
     return (x, y)
 
@@ -207,6 +180,7 @@ def game_clear():
     pg.display.update()
     pg.time.wait(2000)
 
+
 def main():
     global startFlag, flag
     start_x = 10
@@ -214,16 +188,13 @@ def main():
 
     scr = Screen("モンスタ", (1600,900), "fig/pg_bg.jpg") # Screenオブジェクトのインスタンス生成
     clock = pg.time.Clock()
-        
-
     kkt = Enemy("fig/6.png", 2.0, (900,400), 5) # Enemyオブジェクトのインスタンス生成
     kkt.blit(scr)
-    my = My((255,0,0), 10, (start_x, start_y), scr) #Myオブジェクトのインスタンス生成
+    my = My((255,0,0), 25, (start_x, start_y), scr) #Myオブジェクトのインスタンス生成
     my.blit(scr)
-    hpbar = HealthBar("game/hp_bar.png", (100, 10))
+    hpbar = HealthBar("game/hp_bar.png", (100, 10)) #HPbarオブジェクトのインスタンス生成
     hpbar.blit(scr)
     
-
     # 音楽関数の実行
     music()
 
@@ -240,8 +211,7 @@ def main():
                 delection_xy = delection(mouse, my_xy)
                 my.set_vxy(delection_xy)
                 startFlag = True
-                
-               
+                   
         kkt.blit(scr)
         
         if startFlag:
@@ -263,13 +233,12 @@ def main():
             flag = False
             
 
-        if kkt.return_hp() > 0:
-            hpbar.update(scr)
-     
-            clock.tick(1)
-            game_clear()
+        if kkt.return_hp() > 0: #敵キャラのHPが0より大きければ
+            hpbar.update(scr) #HPバーの更新
+
         else:
             #hpが0になったらゲームを終了する
+            game_clear()
             return
         
         pg.display.update()
