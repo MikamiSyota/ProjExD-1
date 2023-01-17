@@ -35,6 +35,7 @@ def check_bound(obj_rct, scr_rct):
         tate = -1
     return yoko, tate       
 
+#土生
 def check_bound_enemy(obj_rct, enm_rct):
     """
     第1引数：マイrect
@@ -47,6 +48,7 @@ def check_bound_enemy(obj_rct, enm_rct):
     if obj_rct.top < enm_rct.top or enm_rct.bottom < obj_rct.bottom:
         tate = -1
     return yoko, tate     
+
 
 class Enemy:
     #敵キャラの描画
@@ -69,6 +71,7 @@ class Enemy:
         return self.hp
 
 
+
 class HealthBar: #HPバーの作成
     max_hp = 5 #敵キャラのHP
     def __init__(self,img_path, hxy):
@@ -80,6 +83,7 @@ class HealthBar: #HPバーの作成
             else: #バーの描画が2回目以降であれば
                 self.rcts[x].centerx = self.rcts[x -1].centerx + self.rcts[x -1].width #一個前の座標の中央のx値と横幅を加算する
                 self.rcts[x].centery = self.rcts[x - 1].centery #立幅は変更しないためcenteyの値は1個前の値をそのまま使用
+
 
     def blit(self, scr:Screen):
         for z in range(self.max_hp):
@@ -100,7 +104,7 @@ class My:
         self.rct.centery = 700 #スタート位置
         self.vx, self.vy = vxy
         self.dx = 0.996
-        self.dy = self.dx * (900/1600)
+        self.dy = self.dx * (900/1600) #減速率に画面の縦横比を考慮する
             
     def set_vxy(self, xy): #発射角度を設定
         self.vx, self.vy = xy
@@ -112,6 +116,7 @@ class My:
         scr.sfc.blit(self.sfc, self.rct)
     
     def update(self, scr:Screen, speed):
+        #國井
         global startFlag
         if speed: #ボールが止まっていなかったら
             self.rct.move_ip(self.vx, self.vy)
@@ -143,7 +148,8 @@ class My:
     
         self.blit(enm)
         
-        
+
+#中島     
 def delection(mouse, my): #発射角度の設定
     dx = abs(mouse[0]-my[0]) #x座標の差
     dy = abs(mouse[1]-my[1]) #y座標の差
@@ -157,7 +163,7 @@ def delection(mouse, my): #発射角度の設定
         y *= -1
     return (x, y)
 
-
+#三上
 # 音楽
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 def music():
@@ -166,7 +172,7 @@ def music():
         pg.mixer.music.load(music)
         pg.mixer.music.play(-1)
 
-
+#三上
 # ゲームクリアの処理
 def game_clear():
     #ゲームクリア時に画像を出力する処理
@@ -231,7 +237,6 @@ def main():
         if not kkt.rct.colliderect(my.rct):
             #flagをfalseに戻す
             flag = False
-            
 
         if kkt.return_hp() > 0: #敵キャラのHPが0より大きければ
             hpbar.update(scr) #HPバーの更新
