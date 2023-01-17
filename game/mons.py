@@ -3,6 +3,7 @@ import sys
 import random
 import math
 
+
 startFlag = False #ボールが停止しているかの判定
 flag = False #連続で敵キャラに当たらないようにする
 
@@ -57,11 +58,11 @@ class My:
         self.sfc.set_colorkey((0, 0, 0))
         pg.draw.circle(self.sfc, color, (rad, rad), rad)
         self.rct = self.sfc.get_rect()
-        self.rct.centerx = random.randint(0, scr.rct.width)
-        self.rct.centery = random.randint(0, scr.rct.height)
+        self.rct.centerx = 700
+        self.rct.centery = 700
         self.vx, self.vy = vxy
-        
         self.dx = 0.99
+        self.dy = self.dx * (900/1600)
             
     def set_vxy(self, xy): #発射角度を設定
         self.vx, self.vy = xy
@@ -83,12 +84,10 @@ class My:
                 self.vy*=self.dx
             else:
                 startFlag = False
-
-            
             self.vx *= yoko
             self.vy *= tate
-
         self.blit(scr)
+        
         
 def delection(mouse, my):
     r = abs(mouse[0]-my[0])
@@ -102,6 +101,7 @@ def delection(mouse, my):
     if mouse[1] <= my[1]:
         y *= -1
     return (x, y)
+
 
 def main():
     global startFlag, flag
