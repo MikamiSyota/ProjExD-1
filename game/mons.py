@@ -71,25 +71,26 @@ class Enemy:
         return self.hp
 
 
-#遠藤
-class HealthBar:
-    max_hp = 5 #こうかとんのHP
+
+class HealthBar: #HPバーの作成
+    max_hp = 5 #敵キャラのHP
     def __init__(self,img_path, hxy):
         self.sfcs = [pg.image.load(img_path) for i in range(self.max_hp)]
         self.rcts = [self.sfcs[j].get_rect() for j in range(self.max_hp)]
-        for x in range(self.max_hp):
-            if x == 0:
+        for x in range(self.max_hp): #敵キャラのHP分繰り返す
+            if x == 0: #バーの描画が1回目であれば
                 self.rcts[x].center = hxy
-            else:
-                self.rcts[x].centerx = self.rcts[x -1].centerx + self.rcts[x -1].width
-                self.rcts[x].centery = self.rcts[x - 1].centery
+            else: #バーの描画が2回目以降であれば
+                self.rcts[x].centerx = self.rcts[x -1].centerx + self.rcts[x -1].width #一個前の座標の中央のx値と横幅を加算する
+                self.rcts[x].centery = self.rcts[x - 1].centery #立幅は変更しないためcenteyの値は1個前の値をそのまま使用
+
 
     def blit(self, scr:Screen):
         for z in range(self.max_hp):
             scr.sfc.blit(self.sfcs[z], self.rcts[z])
 
     def update(self, scr:Screen):
-        for y in range(self.max_hp):
+        for y in range(self.max_hp): #敵キャラの現在のHP分繰り返す
             self.blit(scr)
 
 
@@ -147,6 +148,7 @@ class My:
     
         self.blit(enm)
         
+
 #中島     
 def delection(mouse, my): #発射角度の設定
     dx = abs(mouse[0]-my[0]) #x座標の差
@@ -196,7 +198,7 @@ def main():
     kkt.blit(scr)
     my = My((255,0,0), 25, (start_x, start_y), scr) #Myオブジェクトのインスタンス生成
     my.blit(scr)
-    hpbar = HealthBar("game/hp_bar.png", (100, 10))
+    hpbar = HealthBar("game/hp_bar.png", (100, 10)) #HPbarオブジェクトのインスタンス生成
     hpbar.blit(scr)
     
     # 音楽関数の実行
@@ -235,9 +237,9 @@ def main():
         if not kkt.rct.colliderect(my.rct):
             #flagをfalseに戻す
             flag = False
-            
-        if kkt.return_hp() > 0:
-            hpbar.update(scr)
+
+        if kkt.return_hp() > 0: #敵キャラのHPが0より大きければ
+            hpbar.update(scr) #HPバーの更新
 
         else:
             #hpが0になったらゲームを終了する
