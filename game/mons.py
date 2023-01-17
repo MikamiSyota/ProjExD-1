@@ -71,7 +71,7 @@ class Enemy:
         return self.hp
 
 
-
+#遠藤
 class HealthBar: #HPバーの作成
     max_hp = 5 #敵キャラのHP
     def __init__(self,img_path, hxy):
