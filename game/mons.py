@@ -35,6 +35,7 @@ def check_bound(obj_rct, scr_rct):
         tate = -1
     return yoko, tate       
 
+#土生
 def check_bound_enemy(obj_rct, enm_rct):
     """
     第1引数：マイrect
@@ -47,6 +48,7 @@ def check_bound_enemy(obj_rct, enm_rct):
     if obj_rct.top < enm_rct.top or enm_rct.bottom < obj_rct.bottom:
         tate = -1
     return yoko, tate     
+
 
 class Enemy:
     #敵キャラの描画
@@ -69,6 +71,7 @@ class Enemy:
         return self.hp
 
 
+#遠藤
 class HealthBar:
     max_hp = 5 #こうかとんのHP
     def __init__(self,img_path, hxy):
@@ -112,6 +115,7 @@ class My:
         scr.sfc.blit(self.sfc, self.rct)
     
     def update(self, scr:Screen, speed):
+        #國井
         global startFlag
         if speed: #ボールが止まっていなかったら
             self.rct.move_ip(self.vx, self.vy)
@@ -143,7 +147,7 @@ class My:
     
         self.blit(enm)
         
-        
+#中島     
 def delection(mouse, my): #発射角度の設定
     dx = abs(mouse[0]-my[0]) #x座標の差
     dy = abs(mouse[1]-my[1]) #y座標の差
@@ -157,7 +161,7 @@ def delection(mouse, my): #発射角度の設定
         y *= -1
     return (x, y)
 
-
+#三上
 # 音楽
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 def music():
@@ -166,7 +170,7 @@ def music():
         pg.mixer.music.load(music)
         pg.mixer.music.play(-1)
 
-
+#三上
 # ゲームクリアの処理
 def game_clear():
     #ゲームクリア時に画像を出力する処理
@@ -232,7 +236,6 @@ def main():
             #flagをfalseに戻す
             flag = False
             
-
         if kkt.return_hp() > 0:
             hpbar.update(scr)
 
