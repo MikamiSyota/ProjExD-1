@@ -139,7 +139,7 @@ def main():
     my = My((255,0,0), 25, (start_x, start_y), scr)
     my.blit(scr)
 
-    # 音楽
+    # 音楽関数の実行
     music()
 
     while True:
