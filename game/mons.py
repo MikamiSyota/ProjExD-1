@@ -2,9 +2,10 @@ import pygame as pg
 import sys
 import random
 import os
+import math
 
-startFlag = False
-flag = False
+startFlag = False #ボールが停止しているかの判定
+flag = False #連続で敵キャラに当たらないようにする
 
 
 class Screen:
@@ -21,11 +22,7 @@ class Screen:
         
         
 def check_bound(obj_rct, scr_rct):
-    """
-    第1引数：こうかとんrectまたは爆弾rect
-    第2引数：スクリーンrect
-    範囲内：+1／範囲外：-1
-    """
+    #壁との当たり判定
     yoko, tate = +1, +1
     if obj_rct.left < scr_rct.left or scr_rct.right < obj_rct.right:
         yoko = -1
@@ -35,20 +32,23 @@ def check_bound(obj_rct, scr_rct):
 
 
 class Enemy:
+    #敵キャラの描画
     def __init__(self, img_path, ratio, xy, hp):
         self.sfc = pg.image.load(img_path)
         self.sfc = pg.transform.rotozoom(self.sfc, 0, ratio)
         self.rct = self.sfc.get_rect()
         self.rct.center = xy
-        self.hp = hp
+        self.hp = hp #ヒットポイント
 
     def blit(self, scr:Screen):
         scr.sfc.blit(self.sfc, self.rct)
         
     def hit(self):
+        #ボールが当たった時ヒットポイントを-1する
         self.hp -= 1
         
     def return_hp(self):
+        #ヒットポイントを返す
         return self.hp
         
 
@@ -61,40 +61,47 @@ class My:
         self.rct.centerx = random.randint(0, scr.rct.width)
         self.rct.centery = random.randint(0, scr.rct.height)
         self.vx, self.vy = vxy
-        self.dx = -0.01
-        if vxy[0] < 0:
-            self.dx *= -1
-        self.dy = -0.01
-        if vxy[1] < 0:
-            self.dy *= -1
+        
+        self.dx = 0.99
+            
+    def set_vxy(self, xy): #発射角度を設定
+        self.vx, self.vy = xy
+    
+    def return_xy(self): #ボールの座標を返す
+        return (self.rct.centerx, self.rct.centery)
         
     def blit(self, scr:Screen):
         scr.sfc.blit(self.sfc, self.rct)
     
     def update(self, scr:Screen, speed):
         global startFlag
-        if speed:
+        if speed: #ボールが止まっていなかったら
             self.rct.move_ip(self.vx, self.vy)
             yoko, tate = check_bound(self.rct, scr.rct)
             if abs(self.vx) >= abs(self.dx):
-                self.vx += self.dx
-                self.vy += self.dy
+                #減速させる
+                self.vx*=self.dx
+                self.vy*=self.dx
             else:
                 startFlag = False
-                if self.vx > 0:
-                    self.vx = 10
-                elif self.vx < 0:
-                    self.vx = -10
-                if self.vy > 0:
-                    self.vy = 10
-                elif self.vy < 0:
-                    self.vy = -10
+
             
             self.vx *= yoko
             self.vy *= tate
-            self.dx *= yoko
-            self.dy *= tate
         self.blit(scr)
+        
+def delection(mouse, my):
+    r = abs(mouse[0]-my[0])
+    l = abs(mouse[1]-my[1])
+    res = r^2 + l^2
+    res = math.sqrt(res)
+    x = r/res
+    y = l/res
+    if mouse[0] <= my[0]:
+        x *= -1
+    if mouse[1] <= my[1]:
+        y *= -1
+    return (x, y)
 
 
 # 音楽
@@ -124,7 +131,7 @@ def main():
     global startFlag, flag
     start_x = 10
     start_y = 10
-    scr = Screen("モンスト", (1600,900), "fig/pg_bg.jpg") # Screenオブジェクトのインスタンス生成
+    scr = Screen("モンスタ", (1600,900), "fig/pg_bg.jpg") # Screenオブジェクトのインスタンス生成
     clock = pg.time.Clock()
         
     kkt = Enemy("fig/6.png", 2.0, (900,400), 3) # Enemyオブジェクトのインスタンス生成
@@ -143,23 +150,31 @@ def main():
                 return
             
             if event.type == pg.MOUSEBUTTONDOWN and startFlag == False:
+                mouse = pg.mouse.get_pos()#マウス座標の取得
+                my_xy = my.return_xy()
+                delection_xy = delection(mouse, my_xy)
+                my.set_vxy(delection_xy)
                 startFlag = True
                
         kkt.blit(scr)
+        
         if startFlag:
             my.update(scr, True)
         else:
             my.update(scr, False)
             
         if kkt.rct.colliderect(my.rct) and  not flag:
-            kkt.hit()
-            flag = True
+            kkt.hit()#hpを減らす
+            flag = True#flagをTrueにして連続で当たることを回避する
+            
         if not kkt.rct.colliderect(my.rct):
+            #flagをfalseに戻す
             flag = False
             
         if kkt.return_hp() <= 0:
             clock.tick(1)
             game_clear()
+            #hpが0になったらゲームを終了する
             return
         
         pg.display.update()
