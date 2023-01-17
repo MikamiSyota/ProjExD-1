@@ -1,6 +1,7 @@
 import pygame as pg
 import sys
 import random
+import os
 import math
 
 startFlag = False #ボールが停止しているかの判定
@@ -87,7 +88,6 @@ class My:
             
             self.vx *= yoko
             self.vy *= tate
-
         self.blit(scr)
         
 def delection(mouse, my):
@@ -103,6 +103,30 @@ def delection(mouse, my):
         y *= -1
     return (x, y)
 
+
+# 音楽
+main_dir = os.path.split(os.path.abspath(__file__))[0]
+def music():
+    if pg.mixer:
+        music = os.path.join(main_dir, "../fig", "monst_bgm.wav")
+        pg.mixer.music.load(music)
+        pg.mixer.music.play(-1)
+
+
+# ゲームクリアの処理
+def game_clear():
+    #ゲームクリア時に画像を出力する処理
+    pg.display.set_caption("こうかとん、撃破。")
+    scrn_sfc = pg.display.set_mode((1600, 900))
+    scrn_rct = scrn_sfc.get_rect()
+    img_sfc = pg.image.load("fig/game_clear.jpg")
+    img_sfc = pg.transform.scale(img_sfc, (1600, 900))
+    img_rct = img_sfc.get_rect()
+    scrn_sfc.blit(img_sfc, img_rct)
+    pg.display.update()
+    pg.time.wait(2000)
+
+
 def main():
     global startFlag, flag
     start_x = 10
@@ -112,9 +136,12 @@ def main():
         
     kkt = Enemy("fig/6.png", 2.0, (900,400), 3) # Enemyオブジェクトのインスタンス生成
     kkt.blit(scr)
-    my = My((255,0,0), 10, (start_x, start_y), scr)
+    my = My((255,0,0), 25, (start_x, start_y), scr)
     my.blit(scr)
-    
+
+    # 音楽
+    music()
+
     while True:
         scr.blit()
         for event in pg.event.get():
@@ -145,12 +172,13 @@ def main():
             flag = False
             
         if kkt.return_hp() <= 0:
+            clock.tick(1)
+            game_clear()
             #hpが0になったらゲームを終了する
             return
         
         pg.display.update()
-        clock.tick(1000)
-    
+        clock.tick(1000)    
         
 if __name__ == '__main__':
     pg.init()
