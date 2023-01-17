@@ -140,7 +140,7 @@ def main():
     kkt.blit(scr)
     my = My((255,0,0), 10, (start_x, start_y), scr) #Myオブジェクトのインスタンス生成
     my.blit(scr)
-    hpbar = HealthBar("game/hp_bar.png", (250, 100))
+    hpbar = HealthBar("game/hp_bar.png", (100, 10))
     hpbar.blit(scr)
     
     while True:
@@ -163,13 +163,14 @@ def main():
             
         if kkt.rct.colliderect(my.rct) and  not flag:
             kkt.hit()#hpを減らす
+            HealthBar.max_hp -= 1
             flag = True#flagを0にして連続で当たることを回避する
             
         if not kkt.rct.colliderect(my.rct):
             #flagをfalseに戻す
             flag = False
             
-        if kkt.return_hp() >= 0:
+        if kkt.return_hp() > 0:
             hpbar.update(scr)
         else:
             #hpが0になったらゲームを終了する
