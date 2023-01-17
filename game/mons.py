@@ -69,7 +69,38 @@ class Enemy:
     def return_hp(self):
         #ヒットポイントを返す
         return self.hp
+
+class HealthBar:
+    max_hp = 5
+    def __init__(self,img_path, hxy):
+        self.sfcs = [pg.image.load(img_path) for i in range(self.max_hp)]
+        self.rcts = [self.sfcs[j].get_rect() for j in range(self.max_hp)]
+        for x in range(self.max_hp):
+            if x == 0:
+                self.rcts[x].center = hxy
+            else:
+                self.rcts[x].centerx = self.rcts[x -1].centerx + self.rcts[x -1].width
+                self.rcts[x].centery = self.rcts[x - 1].centery
+        # print(self.rct.width)
+
+
+
+    def blit(self, scr:Screen):
+        for z in range(self.max_hp):
+            scr.sfc.blit(self.sfcs[z], self.rcts[z])
+
+    def update(self, scr:Screen):
+        for y in range(self.max_hp):
+            self.blit(scr)
+
+        # if self.hp_gage != 0:
+        #     self.hp_gage -= 20
+        #     pg.draw.rect(self.sfc, (32, 32, 32), [10+self.hp_gage*2, 450, (100 - self.hp_gage)*2, 25])
+        # else:
+        #     pass
         
+
+
 
 class My:
     def __init__(self, color, rad, vxy, scr:Screen):
@@ -80,6 +111,7 @@ class My:
         self.rct.centerx = random.randint(0, scr.rct.width)
         self.rct.centery = random.randint(0, scr.rct.height)
         self.vx, self.vy = vxy
+
         
         self.dx = 0.99
             
@@ -183,10 +215,14 @@ def main():
     scr = Screen("モンスタ", (1600,900), "fig/pg_bg.jpg") # Screenオブジェクトのインスタンス生成
     clock = pg.time.Clock()
         
-    kkt = Enemy("game/fig/6.png", 2.0, (900,400), 3) # Enemyオブジェクトのインスタンス生成
+
+    kkt = Enemy("fig/6.png", 2.0, (900,400), 5) # Enemyオブジェクトのインスタンス生成
     kkt.blit(scr)
-    my = My((255,0,0), 25, (start_x, start_y), scr)
+    my = My((255,0,0), 10, (start_x, start_y), scr) #Myオブジェクトのインスタンス生成
     my.blit(scr)
+    hpbar = HealthBar("game/hp_bar.png", (100, 10))
+    hpbar.blit(scr)
+    
 
     # 音楽関数の実行
     music()
@@ -204,6 +240,7 @@ def main():
                 delection_xy = delection(mouse, my_xy)
                 my.set_vxy(delection_xy)
                 startFlag = True
+                
                
         kkt.blit(scr)
         
@@ -213,7 +250,8 @@ def main():
             my.update(scr, False)
             
         if kkt.rct.colliderect(my.rct) and  not flag:
-            kkt.hit()
+            kkt.hit()#hpを減らす
+            HealthBar.max_hp -= 1
             if startFlag:
                 my.update2(kkt, True)
             else:
@@ -224,9 +262,13 @@ def main():
             #flagをfalseに戻す
             flag = False
             
-        if kkt.return_hp() <= 0:
+
+        if kkt.return_hp() > 0:
+            hpbar.update(scr)
+     
             clock.tick(1)
             game_clear()
+        else:
             #hpが0になったらゲームを終了する
             return
         
