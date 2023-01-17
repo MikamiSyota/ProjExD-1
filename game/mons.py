@@ -70,7 +70,7 @@ class Enemy:
 
 
 class HealthBar:
-    max_hp = 5
+    max_hp = 5 #こうかとんのHP
     def __init__(self,img_path, hxy):
         self.sfcs = [pg.image.load(img_path) for i in range(self.max_hp)]
         self.rcts = [self.sfcs[j].get_rect() for j in range(self.max_hp)]
@@ -80,9 +80,6 @@ class HealthBar:
             else:
                 self.rcts[x].centerx = self.rcts[x -1].centerx + self.rcts[x -1].width
                 self.rcts[x].centery = self.rcts[x - 1].centery
-        # print(self.rct.width)
-
-
 
     def blit(self, scr:Screen):
         for z in range(self.max_hp):
@@ -99,8 +96,8 @@ class My:
         self.sfc.set_colorkey((0, 0, 0))
         pg.draw.circle(self.sfc, color, (rad, rad), rad)
         self.rct = self.sfc.get_rect()
-        self.rct.centerx = 700
-        self.rct.centery = 700
+        self.rct.centerx = 700 #スタート位置
+        self.rct.centery = 700 #スタート位置
         self.vx, self.vy = vxy
         self.dx = 0.996
         self.dy = self.dx * (900/1600)
@@ -147,16 +144,16 @@ class My:
         self.blit(enm)
         
         
-def delection(mouse, my):
-    r = abs(mouse[0]-my[0])
-    l = abs(mouse[1]-my[1])
-    res = r^2 + l^2
-    res = math.sqrt(res)
-    x = r/res
-    y = l/res
-    if mouse[0] <= my[0]:
-        x *= -1
-    if mouse[1] <= my[1]:
+def delection(mouse, my): #発射角度の設定
+    dx = abs(mouse[0]-my[0]) #x座標の差
+    dy = abs(mouse[1]-my[1]) #y座標の差
+    res = dx^2 + dy^2 #斜めの距離
+    res = math.sqrt(res) 
+    x = dx/res #比率を求める
+    y = dy/res #比率を求める
+    if mouse[0] <= my[0]:#マウス座標がボールより小さいとき
+        x *= -1 
+    if mouse[1] <= my[1]:#マウス座標がボールより小さいとき
         y *= -1
     return (x, y)
 
