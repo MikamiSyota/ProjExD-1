@@ -21,7 +21,7 @@ class Screen:
         
 def check_bound(obj_rct, scr_rct):
     """
-    第1引数：こうかとんrectまたは爆弾rect
+    第1引数：マイrect
     第2引数：スクリーンrect
     範囲内：+1／範囲外：-1
     """
@@ -32,6 +32,18 @@ def check_bound(obj_rct, scr_rct):
         tate = -1
     return yoko, tate       
 
+def check_bound_enemy(obj_rct, enm_rct):
+    """
+    第1引数：マイrect
+    第2引数：エネミーrect
+    範囲内：+1／範囲外：-1
+    """
+    yoko, tate = +1, +1
+    if obj_rct.left < enm_rct.left or enm_rct.right < obj_rct.right:
+        yoko = -1
+    if obj_rct.top < enm_rct.top or enm_rct.bottom < obj_rct.bottom:
+        tate = -1
+    return yoko, tate     
 
 class Enemy:
     def __init__(self, img_path, ratio, xy, hp):
@@ -93,17 +105,43 @@ class My:
             self.vy *= tate
             self.dx *= yoko
             self.dy *= tate
-
+    
         self.blit(scr)
+            
+    def update2(self, enm:Enemy, speed):
+        global startFlag
+        if speed:
+            self.rct.move_ip(self.vx, self.vy)
+            yoko, tate = check_bound(self.rct, enm.rct)
+            if abs(self.vx) >= abs(self.dx):
+                self.vx += self.dx
+                self.vy += self.dy
+            else:
+                startFlag = False
+                if self.vx > 0:
+                    self.vx = 10
+                elif self.vx < 0:
+                    self.vx = -10
+                if self.vy > 0:
+                    self.vy = 10
+                elif self.vy < 0:
+                    self.vy = -10
+            
+            self.vx *= yoko
+            self.vy *= tate
+            self.dx *= yoko
+            self.dy *= tate
+    
+        self.blit(enm)
 
 def main():
     global startFlag, flag
     start_x = 10
     start_y = 10
-    scr = Screen("モンスト", (1600,900), "fig/pg_bg.jpg") # Screenオブジェクトのインスタンス生成
+    scr = Screen("モンスト", (1600,900), "game/fig/pg_bg.jpg") # Screenオブジェクトのインスタンス生成
     clock = pg.time.Clock()
         
-    kkt = Enemy("fig/6.png", 2.0, (900,400), 3) # Enemyオブジェクトのインスタンス生成
+    kkt = Enemy("game/fig/6.png", 2.0, (900,400), 3) # Enemyオブジェクトのインスタンス生成
     kkt.blit(scr)
     my = My((255,0,0), 10, (start_x, start_y), scr)
     my.blit(scr)
@@ -125,6 +163,10 @@ def main():
             
         if kkt.rct.colliderect(my.rct) and  not flag:
             kkt.hit()
+            if startFlag:
+                my.update2(kkt, True)
+            else:
+                my.update2(kkt, False)
             flag = True
         if not kkt.rct.colliderect(my.rct):
             flag = False
